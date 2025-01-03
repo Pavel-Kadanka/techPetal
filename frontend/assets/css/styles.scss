@@ -1,0 +1,45 @@
+body {
+    background-color: $color-canvas;
+}
+.text-subtitle-1 {
+    color: $color-canvas;
+}
+.text-subtitle-2 {
+    color: $color-canvas;
+}
+.text-h1 {
+    color: white;
+}
+.text-h2 {
+    color: white;
+}
+.text-h3 {
+    color: $pink-1;
+}
+.text-h4 {
+    color: $pink-3;
+}
+.text-h5 {
+    color: $pink-3;
+}
+.pink-1 {
+    color: $pink-1;
+}
+.pink-2 {
+    color: $pink-2;
+}
+.pink-3 {
+    color: $pink-3;
+}
+.pink-4 {
+    color: $pink-4;
+}
+.pink-5 {
+    color: $pink-5;
+}
+.text-content {
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(65px);
+    height: 10%;
+}
