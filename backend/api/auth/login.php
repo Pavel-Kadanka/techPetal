@@ -1,11 +1,11 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: POST");
-header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+require_once '../../config/cors.php';
+handleCors();
 
-include_once '../../config/database.php';
-include_once '../../models/User.php';
+require_once '../../config/database.php';
+require_once '../../models/User.php';
+
+header("Content-Type: application/json; charset=UTF-8");
 
 $database = new Database();
 $db = $database->getConnection();
@@ -20,9 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             if (password_verify($data->password, $row['password'])) {
-                // Generate JWT token
-                $token = generateJWT($row);
-                
+                // Instead of JWT, just use the user ID as the token
                 http_response_code(200);
                 echo json_encode(array(
                     "user" => array(
@@ -31,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         "email" => $row['email'],
                         "role" => $row['role']
                     ),
-                    "token" => $token
+                    "token" => $row['id'] // Using user ID as the token
                 ));
             } else {
                 http_response_code(401);

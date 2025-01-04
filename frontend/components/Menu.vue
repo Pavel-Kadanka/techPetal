@@ -10,20 +10,51 @@
         <v-btn class="mx-4 custom-border" color="primary" variant="outlined" border="md" href="/about">o nás</v-btn>
       </v-col>
       <v-col cols="2" align-self="center" class="text-center">
-        <a href="/account">
+        <v-btn icon href="/account" class="" variant="flat">
           <v-icon size="40" color="primary" icon="mdi-magnify"></v-icon>
-        </a>
-        <a href="/account" class="pl-4">
+        </v-btn>
+        <v-btn icon href="/account" variant="flat">
           <v-icon size="40" color="primary" icon="mdi-account"></v-icon>
-        </a>
+        </v-btn>
+        <template v-if="isLoggedIn">
+          <v-btn icon @click="handleLogout" variant="flat">
+            <v-icon size="40" color="primary" icon="mdi-logout"></v-icon>
+          </v-btn>
+        </template>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
-<script>
-export default {
-  name: 'SimpleMenu',
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useApi } from '~/composables/useApi';
+
+const router = useRouter();
+const api = useApi();
+const isLoggedIn = ref(false);
+const user = ref(null);
+
+onMounted(() => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    isLoggedIn.value = true;
+    const userData = JSON.parse(localStorage.getItem('user') || '{}');
+    user.value = userData;
+  }
+});
+
+const handleLogout = async () => {
+  try {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    isLoggedIn.value = false;
+    user.value = null;
+    location.reload();
+  } catch (error) {
+    console.error('Logout error:', error);
+  }
 };
 </script>
 

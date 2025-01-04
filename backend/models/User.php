@@ -51,5 +51,77 @@ class User {
         $stmt->execute();
         return $stmt;
     }
+
+    // Method to get all users
+    public function getUsers() {
+        try {
+            $query = "SELECT id, name, email, role, created FROM " . $this->table_name;
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            return $stmt;
+        } catch (PDOException $e) {
+            throw new Exception("Database error: " . $e->getMessage());
+        }
+    }
+
+    // Method to get a single user
+    public function getSingleUser() {
+        try {
+            $query = "SELECT id, name, email, role, created FROM " . $this->table_name . " WHERE id = :id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":id", $this->id);
+            $stmt->execute();
+            return $stmt;
+        } catch (PDOException $e) {
+            throw new Exception("Database error: " . $e->getMessage());
+        }
+    }
+
+    public function update($data) {
+        $query = "UPDATE " . $this->table_name . " SET ";
+        $params = [];
+        
+        if (!empty($data->name)) {
+            $params[] = "name = :name";
+        }
+        if (!empty($data->email)) {
+            $params[] = "email = :email";
+        }
+        if (!empty($data->password)) {
+            $params[] = "password = :password";
+        }
+        if (!empty($data->role)) {
+            $params[] = "role = :role";
+        }
+        
+        $query .= implode(", ", $params);
+        $query .= " WHERE id = :id";
+
+        $stmt = $this->conn->prepare($query);
+
+        if (!empty($data->name)) {
+            $stmt->bindParam(":name", $data->name);
+        }
+        if (!empty($data->email)) {
+            $stmt->bindParam(":email", $data->email);
+        }
+        if (!empty($data->password)) {
+            $password_hash = password_hash($data->password, PASSWORD_DEFAULT);
+            $stmt->bindParam(":password", $password_hash);
+        }
+        if (!empty($data->role)) {
+            $stmt->bindParam(":role", $data->role);
+        }
+        $stmt->bindParam(":id", $this->id);
+
+        return $stmt->execute();
+    }
+
+    public function delete() {
+        $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":id", $this->id);
+        return $stmt->execute();
+    }
 }
 ?> 

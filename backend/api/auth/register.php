@@ -1,45 +1,38 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: POST");
-header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+require_once '../../config/cors.php';
+require_once '../../config/database.php';
+require_once '../../models/User.php';
 
-include_once '../../config/database.php';
-include_once '../../models/User.php';
+header("Content-Type: application/json; charset=UTF-8");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $database = new Database();
-    $db = $database->getConnection();
-    $user = new User($db);
-
-    // Get posted data
     $data = json_decode(file_get_contents("php://input"));
-
+    
     if (!empty($data->name) && !empty($data->email) && !empty($data->password)) {
-        // Set user properties
+        $database = new Database();
+        $db = $database->getConnection();
+        $user = new User($db);
+        
+        // Set user values
         $user->name = $data->name;
         $user->email = $data->email;
         $user->password = password_hash($data->password, PASSWORD_DEFAULT);
-        $user->role = !empty($data->role) ? $data->role : 'user';
-
-        // Check if email already exists
-        if ($user->emailExists()) {
-            http_response_code(400);
-            echo json_encode(array("message" => "Email already exists."));
-            return;
-        }
-
-        // Create the user
+        $user->role = isset($data->role) ? $data->role : 'user';
+        
         if ($user->create()) {
+            // Get the newly created user's data
+            $stmt = $user->getUserByEmail();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            
             http_response_code(201);
             echo json_encode(array(
                 "user" => array(
-                    "id" => $user->id,
-                    "name" => $user->name,
-                    "email" => $user->email,
-                    "role" => $user->role
+                    "id" => $row['id'],
+                    "name" => $row['name'],
+                    "email" => $row['email'],
+                    "role" => $row['role']
                 ),
-                "message" => "User was created."
+                "token" => $row['id'] // Using user ID as token, same as login
             ));
         } else {
             http_response_code(503);
@@ -49,8 +42,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         http_response_code(400);
         echo json_encode(array("message" => "Unable to create user. Data is incomplete."));
     }
-} else if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
 }
 ?> 

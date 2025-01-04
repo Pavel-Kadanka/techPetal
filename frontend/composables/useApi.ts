@@ -1,3 +1,18 @@
+interface UserData {
+  id?: number
+  name: string
+  email: string
+  password?: string
+  role: string
+}
+
+interface UpdateUserData {
+  name?: string
+  email?: string
+  password?: string
+  role?: string
+}
+
 export const useApi = () => {
   const config = useRuntimeConfig()
   
@@ -80,12 +95,139 @@ export const useApi = () => {
     }
   }
 
+  const getCurrentUser = async () => {
+    try {
+      if (!process.client) {
+        console.log('Not running on client, skipping getCurrentUser')
+        return null
+      }
+      
+      const token = localStorage.getItem('token')
+      if (!token) {
+        console.log('No token found in localStorage')
+        return null
+      }
+
+      console.log('Fetching current user with token:', token.substring(0, 10) + '...')
+
+      const response = await $fetch('/api/auth/me.php', {
+        baseURL: config.public.apiBase,
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        credentials: 'include'
+      })
+
+      console.log('getCurrentUser response:', response)
+      
+      if (!response || !response.id) {
+        console.log('Invalid response from server')
+        localStorage.removeItem('token')
+        return null
+      }
+
+      return response
+    } catch (error) {
+      console.error('Error fetching current user:', error)
+      localStorage.removeItem('token')
+      return null
+    }
+  }
+
+  const getAllUsers = async () => {
+    try {
+      const token = localStorage.getItem('token')
+      return await $fetch('/api/users.php', {
+        baseURL: config.public.apiBase,
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+    } catch (error) {
+      console.error('Error fetching all users:', error)
+      throw error
+    }
+  }
+
+  const createUser = async (userData: UserData) => {
+    try {
+      const token = localStorage.getItem('token')
+      return await $fetch('/api/users.php', {
+        baseURL: config.public.apiBase,
+        method: 'POST',
+        body: userData,
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+    } catch (error) {
+      console.error('Error creating user:', error)
+      throw error
+    }
+  }
+
+  const updateUser = async (userId: number, userData: UpdateUserData) => {
+    try {
+      const token = localStorage.getItem('token')
+      return await $fetch(`/api/users.php?id=${userId}`, {
+        baseURL: config.public.apiBase,
+        method: 'PUT',
+        body: userData,
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+    } catch (error) {
+      console.error('Error updating user:', error)
+      throw error
+    }
+  }
+
+  const deleteUser = async (userId: number) => {
+    try {
+      const token = localStorage.getItem('token')
+      return await $fetch(`/api/users.php?id=${userId}`, {
+        baseURL: config.public.apiBase,
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+    } catch (error) {
+      console.error('Error deleting user:', error)
+      throw error
+    }
+  }
+
+  const updateProfile = async (userData: UpdateUserData) => {
+    try {
+      const token = localStorage.getItem('token')
+      return await $fetch('/api/users/profile.php', {
+        baseURL: config.public.apiBase,
+        method: 'PUT',
+        body: userData,
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+    } catch (error) {
+      console.error('Error updating profile:', error)
+      throw error
+    }
+  }
+
   return {
     fetchPosts,
     fetchPost,
     fetchUsers,
     login,
     register,
-    fetchUser
+    fetchUser,
+    getCurrentUser,
+    getAllUsers,
+    createUser,
+    updateUser,
+    deleteUser,
+    updateProfile
   }
 } 
