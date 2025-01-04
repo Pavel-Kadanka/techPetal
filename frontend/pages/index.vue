@@ -1,5 +1,17 @@
-<template>
+<script setup>
+const route = useRoute()
+const { fetchPosts } = useApi()
 
+const { data: post, pending, error } = await useAsyncData(
+    'post',
+    () => fetchPosts()
+)
+
+
+const numberOfPosts = post.value?.length - 1
+
+</script>
+<template>
     <v-row align="end" justify="center">
         <v-col cols="6">
             <div class="title-text">
@@ -10,50 +22,54 @@
                     <span class="pink-1 font-weight-bold">spotřebičů</span> podívejte se na jeden z našich článků
                 </span>
             </div>
-            <v-card class="d-flex flex-column" height="65vh" image="/cat.jpg" rounded="xl" v-ripple="{ class: 'text-primary' }">
-                <v-spacer></v-spacer>
-                <v-spacer></v-spacer>
-                <v-card-text class="text-content">
-                    <h3 class="text-h4 font-weight-bold">This is a title</h3>
+
+            <v-card class="mx-auto bg-primary" height="65vh" rounded="xl" :href="'/category/'+post[numberOfPosts].theme.toLowerCase()+'/'+post[numberOfPosts].id">
+                <v-img class="align-end text-white" height="40vh" :src="'/'+post[numberOfPosts].image"
+                    cover>
+                </v-img>
+                <v-card-title class="font-weight-bold">{{ post[numberOfPosts].title }}</v-card-title>
+                <v-card-subtitle>
                     <v-list-item>
-                        <template v-slot:title><span class="text-subtitle-1">Thema</span></template>
+                        <template v-slot:title><span>{{ post[numberOfPosts].theme }}</span></template>
                         <template v-slot:append>
-                            <span class="text-subtitle-1">22.11. 2025</span>
+                            <span>{{ post[numberOfPosts].date }}</span>
                         </template>
                     </v-list-item>
-                    <p class="text-subtitle-2 pl-4">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi,
-                        ratione debitis quis est labore voluptatibus!
-                    </p>
+                </v-card-subtitle>
+
+                <v-card-text>
+                    {{ post[numberOfPosts].text }}
                 </v-card-text>
             </v-card>
         </v-col>
         <v-col cols="6">
-            <v-card class="d-flex flex-column my-6" height="40vh" image="/cat.jpg" rounded="xl" v-ripple="{ class: 'text-primary' }">
-                <v-spacer></v-spacer>
-                <v-spacer></v-spacer>
-                <v-card-text class="text-content">
-                    <h3 class="text-h4 font-weight-bold">This is a title</h3>
+            <v-card class="mx-auto bg-primary" height="40vh" rounded="xl" :href="'/category/'+post[numberOfPosts-1].theme.toLowerCase()+'/'+post[numberOfPosts-1].id">
+                <v-img class="align-end text-white" height="25vh" :src="'/'+post[numberOfPosts-1].image"
+                    cover>
+                </v-img>
+                <v-card-title class="font-weight-bold">{{ post[numberOfPosts-1].title }}</v-card-title>
+                <v-card-subtitle>
                     <v-list-item>
-                        <template v-slot:title><span class="text-subtitle-1">Thema</span></template>
+                        <template v-slot:title><span>{{ post[numberOfPosts-1].theme }}</span></template>
                         <template v-slot:append>
-                            <span class="text-subtitle-1">22.11. 2025</span>
+                            <span>{{ post[numberOfPosts-1].date }}</span>
                         </template>
                     </v-list-item>
-                </v-card-text>
+                </v-card-subtitle>
             </v-card>
-            <v-card class="d-flex flex-column" height="35vh" image="/cat.jpg" rounded="xl" v-ripple="{ class: 'text-primary' }">
-                <v-spacer></v-spacer>
-                <v-spacer></v-spacer>
-                <v-card-text class="text-content">
-                    <h3 class="text-h4 font-weight-bold">This is a title</h3>
+            <v-card class="mt-5 bg-primary" height="40vh" rounded="xl" :href="'/category/'+post[numberOfPosts-2].theme.toLowerCase()+'/'+post[numberOfPosts-2].id">
+                <v-img class="align-end text-white" height="25vh" :src="'/'+post[numberOfPosts-2].image"
+                    cover>
+                </v-img>
+                <v-card-title class="font-weight-bold">{{ post[numberOfPosts-2].title }}</v-card-title>
+                <v-card-subtitle>
                     <v-list-item>
-                        <template v-slot:title><span class="text-subtitle-1">Thema</span></template>
+                        <template v-slot:title><span>{{ post[numberOfPosts-2].theme }}</span></template>
                         <template v-slot:append>
-                            <span class="text-subtitle-1">22.11. 2025</span>
+                            <span>{{ post[numberOfPosts-2].date }}</span>
                         </template>
                     </v-list-item>
-                </v-card-text>
+                </v-card-subtitle>
             </v-card>
         </v-col>
     </v-row>

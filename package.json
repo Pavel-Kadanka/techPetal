@@ -1,0 +1,12 @@
+{
+  "name": "techpetal-project",
+  "version": "1.0.0",
+  "scripts": {
+    "frontend": "cd frontend && npm run dev",
+    "backend": "php -S localhost:8000 -t backend",
+    "dev": "concurrently \"npm run frontend\" \"npm run backend\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

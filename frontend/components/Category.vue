@@ -5,7 +5,7 @@
                 <strong class="">{{ category.name }}</strong>
             </v-col>
             <v-col v-for="(subItem, subIndex) in category.items" :key="subIndex" cols="6" md="2">
-                <v-card height="150" class="d-flex align-center justify-center card" rounded="xl" color="primary" variant="outlined" image="/cat.jpg">
+                <v-card height="150" class="d-flex align-center justify-center card" rounded="xl" color="primary" variant="outlined" :image="subItem.image">
                     <v-card-text class="card">
                         <a class="text-white link"  :href="'/category' + subItem.link">
                             {{ subItem.name }}

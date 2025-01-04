@@ -1,27 +1,39 @@
 <template>
-  <Category :items="categories" />
+  <v-container>
+    <v-breadcrumbs :items="breadcrumbs"></v-breadcrumbs>
+    <Category :items="categories" />
+  </v-container>
 </template>
 
 <script>
 export default {
   data() {
     return {
-      items: [
-        { name: "Počítač", link: "/pocitace" },
-        { name: "Mobily", link: "/mobily" },
-        { name: "Spotřebiče", link: "/spotrebice" },
-      ],
       categories: [
         {
-          name: "Electronics",
+          name: "Elektronika",
           items: [
-            { name: "Počítač", link: "/pocitace" },
-            { name: "Mobily", link: "/mobily" },
+            { name: "Počítače", link: "/pocitace", image: "/computer.webp" },
+            { name: "Mobily", link: "/mobily", image: "/phone.jpg" },
           ],
         },
         {
-          name: "Appliances",
-          items: [{ name: "Spotřebiče", link: "/spotrebice" }],
+          name: "Spotřebiče",
+          items: [
+            { name: "Ledničky", link: "/lednicky", image: "/fridge.webp" },
+            { name: "Pračky", link: "/pracky", image: "/washer.webp" },
+          ],
+        },
+      ],
+      breadcrumbs: [
+        {
+          title: 'Domu',
+          disabled: false,
+          href: '/',
+        },
+        {
+          title: 'Kategorie',
+          disabled: true,
         },
       ],
     };
