@@ -50,14 +50,6 @@
           <v-card class="mb-6" elevation="2">
             <v-card-title class="d-flex justify-space-between align-center bg-primary pa-4">
               <span class="text-white">User Management</span>
-              <v-btn 
-                color="white" 
-                variant="outlined"
-                prepend-icon="mdi-plus"
-                @click="showCreateDialog = true"
-              >
-                Add User
-              </v-btn>
             </v-card-title>
             
             <v-card-text class="pa-4">
@@ -91,20 +83,28 @@
                 :search="searchQuery"
                 class="elevation-1"
               >
-                <template v-slot:item.actions="{ item }">
-                  <v-btn
-                    icon="mdi-pencil"
-                    size="small"
-                    color="primary"
-                    class="mr-2"
-                    @click="editUser(item.raw)"
-                  ></v-btn>
-                  <v-btn
-                    icon="mdi-delete"
-                    size="small"
-                    color="error"
-                    @click="confirmDelete(item.raw)"
-                  ></v-btn>
+                <template v-slot:item="{ item }">
+                  <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.email }}</td>
+                    <td>{{ item.role }}</td>
+                    <td>{{ item.status }}</td>
+                    <td>
+                      <v-btn
+                        icon="mdi-pencil"
+                        size="small"
+                        color="primary"
+                        class="mr-2"
+                        @click="editUser(item)"
+                      ></v-btn>
+                      <v-btn
+                        icon="mdi-delete"
+                        size="small"
+                        color="error"
+                        @click="confirmDelete(item)"
+                      ></v-btn>
+                    </td>
+                  </tr>
                 </template>
               </v-data-table>
             </v-card-text>
@@ -113,13 +113,13 @@
           <!-- Create/Edit User Dialog -->
           <v-dialog v-model="showCreateDialog" max-width="500px">
             <v-card>
-              <v-card-title>{{ editedUser._id ? 'Edit User' : 'Create User' }}</v-card-title>
+              <v-card-title>{{ editedUser.id ? 'Edit User' : 'Create User' }}</v-card-title>
               <v-card-text>
                 <v-form ref="userForm">
                   <v-text-field v-model="editedUser.name" label="Name" required></v-text-field>
                   <v-text-field v-model="editedUser.email" label="Email" type="email" required></v-text-field>
                   <v-text-field 
-                    v-if="!editedUser._id"
+                    v-if="!editedUser.id"
                     v-model="editedUser.password" 
                     label="Password" 
                     type="password"
@@ -309,7 +309,7 @@ const showCreateDialog = ref(false)
 const showDeleteDialog = ref(false)
 const allUsers = ref([])
 const editedUser = ref({
-  _id: null,
+  id: null,
   name: '',
   email: '',
   password: '',
@@ -433,7 +433,10 @@ const fetchAllUsers = async () => {
 }
 
 const editUser = (user) => {
-  editedUser.value = { ...user }
+  editedUser.value = { 
+    ...user,
+    _id: user.id
+  }
   showCreateDialog.value = true
 }
 
@@ -444,13 +447,34 @@ const confirmDelete = (user) => {
 
 const saveUser = async () => {
   try {
-    if (editedUser.value._id) {
-      await api.updateUser(editedUser.value._id, editedUser.value)
+    if (editedUser.value.id) {
+      // Update existing user
+      const updateData = {
+        name: editedUser.value.name,
+        email: editedUser.value.email,
+        role: editedUser.value.role
+      }
+      await api.updateUser(editedUser.value.id, updateData)
     } else {
-      await api.createUser(editedUser.value)
+      // Create new user
+      const createData = {
+        name: editedUser.value.name,
+        email: editedUser.value.email,
+        password: editedUser.value.password,
+        role: editedUser.value.role
+      }
+      await api.createUser(createData)
     }
     showCreateDialog.value = false
-    fetchAllUsers()
+    await fetchAllUsers() // Refresh the users list
+    // Reset the editedUser
+    editedUser.value = {
+      id: null,
+      name: '',
+      email: '',
+      password: '',
+      role: 'user'
+    }
   } catch (error) {
     console.error('Error saving user:', error)
   }
@@ -458,7 +482,7 @@ const saveUser = async () => {
 
 const deleteUser = async () => {
   try {
-    await api.deleteUser(userToDelete.value._id)
+    await api.deleteUser(userToDelete.value.id)
     showDeleteDialog.value = false
     fetchAllUsers()
   } catch (error) {

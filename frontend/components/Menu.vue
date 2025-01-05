@@ -10,9 +10,6 @@
         <v-btn class="mx-4 custom-border" color="primary" variant="outlined" border="md" href="/about">o nás</v-btn>
       </v-col>
       <v-col cols="2" align-self="center" class="text-center">
-        <v-btn icon href="/account" class="" variant="flat">
-          <v-icon size="40" color="primary" icon="mdi-magnify"></v-icon>
-        </v-btn>
         <v-btn icon href="/account" variant="flat">
           <v-icon size="40" color="primary" icon="mdi-account"></v-icon>
         </v-btn>

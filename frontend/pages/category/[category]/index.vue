@@ -80,7 +80,7 @@ const { data: posts, pending, error } = await useAsyncData(
           class="post-card"
         >
           <v-img
-            :src="post.image || '/default-image.jpg'"
+            :src="post.image || '/cat.jpg'"
             class="fill-height"
             cover
             gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.8)"
@@ -96,17 +96,11 @@ const { data: posts, pending, error } = await useAsyncData(
                 >
                   {{ post.theme }}
                 </v-chip>
-
                 <!-- Title -->
                 <v-card-title class="text-white pa-0 text-h6">
                   {{ post.title }}
                 </v-card-title>
-
-                <!-- Preview text -->
-                <v-card-text class="text-white pa-0 pt-2 text-truncate">
-                  {{ post.text }}
-                </v-card-text>
-
+                
                 <!-- Rating and date -->
                 <div class="d-flex align-center mt-2">
                   <v-rating

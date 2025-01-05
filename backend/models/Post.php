@@ -33,5 +33,21 @@ class Post {
         $stmt->execute();
         return $stmt;
     }
+
+    public function getPostsByCategory($category) {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE category = :category";
+        $stmt = $this->conn->prepare($query);
+        
+        // Sanitize category
+        $category = htmlspecialchars(strip_tags($category));
+        
+        // Bind parameter
+        $stmt->bindParam(":category", $category);
+        
+        // Execute query
+        $stmt->execute();
+        
+        return $stmt;
+    }
 }
 ?> 

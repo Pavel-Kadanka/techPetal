@@ -11,17 +11,18 @@ export default {
     return {
       categories: [
         {
-          name: "Elektronika",
+          name: "Technologie",
           items: [
-            { name: "Počítače", link: "/pocitace", image: "/computer.webp" },
-            { name: "Mobily", link: "/mobily", image: "/phone.jpg" },
+            { name: "AI", link: "/ai", image: "https://images.unsplash.com/photo-1518770660439-4636190af475" },
+            { name: "Blockchain", link: "/blockchain", image: "https://images.unsplash.com/photo-1542831371-29b0f74f9713" },
+            { name: "IoT", link: "/iot", image: "https://images.unsplash.com/photo-1527181152855-fc03fc7949c8" },
+            { name: "Bezpečnost", link: "/cyb-safe", image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b" },
           ],
         },
         {
-          name: "Spotřebiče",
+          name: "Startupy",
           items: [
-            { name: "Ledničky", link: "/lednicky", image: "/fridge.webp" },
-            { name: "Pračky", link: "/pracky", image: "/washer.webp" },
+            { name: "Startupy", link: "/startup", image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c" },
           ],
         },
       ],

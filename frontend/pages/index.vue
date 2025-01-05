@@ -24,7 +24,7 @@ const numberOfPosts = post.value?.length - 1
             </div>
 
             <v-card class="mx-auto bg-primary" height="65vh" rounded="xl" :href="'/category/'+post[numberOfPosts].theme.toLowerCase()+'/'+post[numberOfPosts].id">
-                <v-img class="align-end text-white" height="40vh" :src="'/'+post[numberOfPosts].image"
+                <v-img class="align-end text-white" height="40vh" :src="post[numberOfPosts].image"
                     cover>
                 </v-img>
                 <v-card-title class="font-weight-bold">{{ post[numberOfPosts].title }}</v-card-title>

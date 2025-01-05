@@ -23,7 +23,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             http_response_code(404);
             echo json_encode(array("message" => "Post not found."));
         }
-    } else {
+    } 
+    elseif (isset($_GET['category'])) {
+        // Get posts by category
+        $stmt = $post->getPostsByCategory($_GET['category']);
+        $posts_arr = array();
+        
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            array_push($posts_arr, $row);
+        }
+        
+        http_response_code(200);
+        echo json_encode($posts_arr);
+    }
+    else {
         // Get all posts
         $stmt = $post->getPosts();
         $posts_arr = array();
