@@ -25,9 +25,9 @@
               <v-window-item value="register">
                 <v-form @submit.prevent="handleRegister">
                   <v-text-field v-model="registerForm.name" label="Full Name" required></v-text-field>
-                  <v-text-field v-model="registerForm.email" label="Email" type="email" required></v-text-field>
+                  <v-text-field v-model="registerForm.email" label="Email" type="email" :rules="emailRules" required></v-text-field>
                   <v-text-field v-model="registerForm.password" label="Password" type="password"
-                    required></v-text-field>
+                    required :rules="passwordRules"></v-text-field>
                   <v-btn color="primary" type="submit" block class="mt-4">
                     Register
                   </v-btn>
@@ -50,6 +50,7 @@
           <v-card class="mb-6" elevation="2">
             <v-card-title class="d-flex justify-space-between align-center bg-primary pa-4">
               <span class="text-white">User Management</span>
+              <v-btn variant="outlined" color="white" @click="showCreateDialog = true">Add user</v-btn>
             </v-card-title>
             
             <v-card-text class="pa-4">
@@ -83,35 +84,27 @@
                 :search="searchQuery"
                 class="elevation-1"
               >
-                <template v-slot:item="{ item }">
-                  <tr>
-                    <td>{{ item.name }}</td>
-                    <td>{{ item.email }}</td>
-                    <td>{{ item.role }}</td>
-                    <td>{{ item.status }}</td>
-                    <td>
-                      <v-btn
-                        icon="mdi-pencil"
-                        size="small"
-                        color="primary"
-                        class="mr-2"
-                        @click="editUser(item)"
-                      ></v-btn>
-                      <v-btn
-                        icon="mdi-delete"
-                        size="small"
-                        color="error"
-                        @click="confirmDelete(item)"
-                      ></v-btn>
-                    </td>
-                  </tr>
+                <template v-slot:item.actions="{ item }">
+                  <v-btn
+                    icon="mdi-pencil"
+                    size="small"
+                    color="primary"
+                    class="mr-2"
+                    @click="editUser(item)"
+                  ></v-btn>
+                  <v-btn
+                    icon="mdi-delete"
+                    size="small"
+                    color="error"
+                    @click="confirmDelete(item)"
+                  ></v-btn>
                 </template>
               </v-data-table>
             </v-card-text>
           </v-card>
 
           <!-- Create/Edit User Dialog -->
-          <v-dialog v-model="showCreateDialog" max-width="500px">
+          <v-dialog v-model="showEditDialog" max-width="500px">
             <v-card>
               <v-card-title>{{ editedUser.id ? 'Edit User' : 'Create User' }}</v-card-title>
               <v-card-text>
@@ -135,8 +128,38 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="error" @click="showCreateDialog = false">Cancel</v-btn>
+                <v-btn color="error" @click="showEditDialog = false">Cancel</v-btn>
                 <v-btn color="primary" @click="saveUser">Save</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+
+          <v-dialog v-model="showCreateDialog" max-width="500px">
+            <v-card>
+              <v-card-title>{{ creatededUser.id ? 'Edit User' : 'Create User' }}</v-card-title>
+              <v-card-text>
+                <v-form ref="userForm">
+                  <v-text-field v-model="creatededUser.name" label="Name" required></v-text-field>
+                  <v-text-field v-model="creatededUser.email" label="Email" type="email" required></v-text-field>
+                  <v-text-field 
+                    v-if="!creatededUser.id"
+                    v-model="creatededUser.password" 
+                    label="Password" 
+                    type="password"
+                    required
+                  ></v-text-field>
+                  <v-select
+                    v-model="creatededUser.role"
+                    :items="roles"
+                    label="Role"
+                    required
+                  ></v-select>
+                </v-form>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="error" @click="showCreateDialog = false">Cancel</v-btn>
+                  <v-btn color="primary" @click="saveUser">Save</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -150,7 +173,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="error" @click="deleteUser">Delete</v-btn>
+                <v-btn color="error" @click="deleteUser(userToDelete)">Delete</v-btn>
                 <v-btn @click="showDeleteDialog = false">Cancel</v-btn>
               </v-card-actions>
             </v-card>
@@ -172,8 +195,16 @@
                   <v-form ref="profileForm">
                     <v-row>
                       <v-col cols="12" md="6">
-                        <v-text-field
-                          v-model="editedProfile.name"
+                        <v-text-field v-if="!editedProfile.name"
+                          v-model="userData.name"
+                          label="Name"
+                          :readonly="!isEditing"
+                          :rules="[v => !!v || 'Name is required']"
+                          variant="outlined"
+                          prepend-inner-icon="mdi-account"
+                        ></v-text-field>
+                        <v-text-field v-else
+                          v-model="userData.name"
                           label="Name"
                           :readonly="!isEditing"
                           :rules="[v => !!v || 'Name is required']"
@@ -182,7 +213,15 @@
                         ></v-text-field>
                       </v-col>
                       <v-col cols="12" md="6">
-                        <v-text-field
+                        <v-text-field v-if="!editedProfile.email"
+                          v-model="userData.email"
+                          label="Email"
+                          type="email"
+                          readonly
+                          variant="outlined"
+                          prepend-inner-icon="mdi-email"
+                        ></v-text-field>
+                        <v-text-field v-else
                           v-model="editedProfile.email"
                           label="Email"
                           type="email"
@@ -191,54 +230,11 @@
                           prepend-inner-icon="mdi-email"
                         ></v-text-field>
                       </v-col>
-                      <v-col v-if="isEditing" cols="12" md="6">
-                        <v-text-field
-                          v-model="editedProfile.newPassword"
-                          label="New Password (optional)"
-                          type="password"
-                          variant="outlined"
-                          prepend-inner-icon="mdi-lock"
-                          :rules="passwordRules"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col v-if="isEditing" cols="12" md="6">
-                        <v-text-field
-                          v-model="editedProfile.confirmPassword"
-                          label="Confirm Password"
-                          type="password"
-                          variant="outlined"
-                          prepend-inner-icon="mdi-lock-check"
-                          :rules="[v => v === editedProfile.newPassword || 'Passwords must match']"
-                        ></v-text-field>
-                      </v-col>
                     </v-row>
                   </v-form>
                 </v-card-text>
-                <v-divider></v-divider>
                 <v-card-actions class="pa-4">
-                  <v-spacer></v-spacer>
-                  <v-btn v-if="!isEditing" 
-                    color="primary" 
-                    prepend-icon="mdi-pencil"
-                    @click="startEditing"
-                  >
-                    Edit Profile
-                  </v-btn>
-                  <template v-else>
-                    <v-btn color="error" 
-                      prepend-icon="mdi-close"
-                      @click="cancelEditing"
-                      class="mr-2"
-                    >
-                      Cancel
-                    </v-btn>
-                    <v-btn color="success" 
-                      prepend-icon="mdi-check"
-                      @click="saveProfile"
-                    >
-                      Save Changes
-                    </v-btn>
-                  </template>
+                  
                 </v-card-actions>
               </v-card>
             </v-col>
@@ -263,7 +259,7 @@
                         <v-icon color="primary">mdi-calendar</v-icon>
                       </template>
                       <v-list-item-title>Member Since</v-list-item-title>
-                      <v-list-item-subtitle>{{ new Date(userData.createdAt).toLocaleDateString() }}</v-list-item-subtitle>
+                      <v-list-item-subtitle>{{ userData.created }}</v-list-item-subtitle>
                     </v-list-item>
                   </v-list>
                 </v-card-text>
@@ -303,11 +299,18 @@ const roles = ['user', 'admin', 'moderator']
 const showProfile = ref(false)
 const userData = ref(null)
 const { fetchUser } = useApi()
-console.log(userData.value)
 
+const showEditDialog = ref(false)
 const showCreateDialog = ref(false)
 const showDeleteDialog = ref(false)
 const allUsers = ref([])
+const creatededUser = ref({
+  id: null,
+  name: '',
+  email: '',
+  password: '',
+  role: 'user'
+})
 const editedUser = ref({
   id: null,
   name: '',
@@ -315,7 +318,7 @@ const editedUser = ref({
   password: '',
   role: 'user'
 })
-const userToDelete = ref(null)
+let userToDelete = null
 const isEditing = ref(false)
 const editedProfile = ref({
   name: '',
@@ -338,6 +341,10 @@ const passwordRules = [
   v => !v || /\d/.test(v) || 'Password must contain at least one number',
   v => !v || /[A-Z]/.test(v) || 'Password must contain at least one uppercase letter'
 ]
+const emailRules = [
+  v => !!v || 'Email is required',
+  v => /.+@.+\..+/.test(v) || 'Email must be valid'
+]
 
 const filteredUsers = computed(() => {
   let users = [...allUsers.value]
@@ -353,7 +360,7 @@ const handleLogin = async () => {
     if (data.user) {
       localStorage.setItem('token', data.token)
       localStorage.setItem('userData', JSON.stringify(data.user))
-      userData.value = data.user
+      userData.value = await api.getCurrentUser()
       showProfile.value = true
       location.reload();
     }
@@ -433,16 +440,13 @@ const fetchAllUsers = async () => {
 }
 
 const editUser = (user) => {
-  editedUser.value = { 
-    ...user,
-    _id: user.id
-  }
-  showCreateDialog.value = true
+  editedUser.value = { ...user }; // Create a copy of the user object
+  showEditDialog.value = true;
 }
 
 const confirmDelete = (user) => {
-  userToDelete.value = user
-  showDeleteDialog.value = true
+  userToDelete = user;
+  showDeleteDialog.value = true;
 }
 
 const saveUser = async () => {
@@ -450,6 +454,7 @@ const saveUser = async () => {
     if (editedUser.value.id) {
       // Update existing user
       const updateData = {
+        id: editedUser.value.id,
         name: editedUser.value.name,
         email: editedUser.value.email,
         role: editedUser.value.role
@@ -458,17 +463,25 @@ const saveUser = async () => {
     } else {
       // Create new user
       const createData = {
-        name: editedUser.value.name,
-        email: editedUser.value.email,
-        password: editedUser.value.password,
-        role: editedUser.value.role
+        name: creatededUser.value.name,
+        email: creatededUser.value.email,
+        password: creatededUser.value.password,
+        role: creatededUser.value.role
       }
       await api.createUser(createData)
     }
+    showEditDialog.value = false
     showCreateDialog.value = false
-    await fetchAllUsers() // Refresh the users list
+    await fetchAllUsers()
     // Reset the editedUser
-    editedUser.value = {
+    editedUser = {
+      id: null,
+      name: '',
+      email: '',
+      password: '',
+      role: 'user'
+    }
+    creatededUser.value = {
       id: null,
       name: '',
       email: '',
@@ -480,39 +493,16 @@ const saveUser = async () => {
   }
 }
 
-const deleteUser = async () => {
+const deleteUser = async (user) => {
   try {
-    await api.deleteUser(userToDelete.value.id)
-    showDeleteDialog.value = false
-    fetchAllUsers()
+    // Make sure we're using the correct ID property
+    const userId = user._id || user.id; // Handle both possible ID formats
+    await api.deleteUser(userId);
+    showDeleteDialog.value = false;
+    await fetchAllUsers(); // Refresh the list
+    userToDelete = null; // Reset the userToDelete
   } catch (error) {
-    console.error('Error deleting user:', error)
-  }
-}
-
-// Regular user profile functions
-const startEditing = () => {
-  editedProfile.value = { ...userData.value }
-  isEditing.value = true
-}
-
-const cancelEditing = () => {
-  isEditing.value = false
-  editedProfile.value = { ...userData.value }
-}
-
-const saveProfile = async () => {
-  try {
-    const updateData = {
-      name: editedProfile.value.name,
-      ...(editedProfile.value.newPassword && { password: editedProfile.value.newPassword })
-    }
-    const updatedUser = await api.updateProfile(updateData)
-    userData.value = updatedUser
-    isEditing.value = false
-    editedProfile.value.newPassword = ''
-  } catch (error) {
-    console.error('Error updating profile:', error)
+    console.error('Error deleting user:', error);
   }
 }
 

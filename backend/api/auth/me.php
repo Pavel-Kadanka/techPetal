@@ -22,7 +22,7 @@ try {
     $database = new Database();
     $db = $database->getConnection();
     
-    $query = "SELECT id, email, name, role FROM users WHERE id = ?";
+    $query = "SELECT id, email, name, role, created FROM users WHERE id = ?";
     $stmt = $db->prepare($query);
     $stmt->execute([$token]);
     

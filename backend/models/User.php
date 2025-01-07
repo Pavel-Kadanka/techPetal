@@ -27,6 +27,10 @@ class User {
         $stmt->bindParam(":name", $this->name);
         $stmt->bindParam(":email", $this->email);
         $stmt->bindParam(":password", $this->password);
+        if ($this->role == null) {
+            $this->role = "user";
+        }
+        $stmt->bindParam(":role", $this->role);
         $stmt->bindParam(":role", $this->role);
 
         if ($stmt->execute()) {
@@ -77,7 +81,7 @@ class User {
         }
     }
 
-    public function update($data) {
+    public function updateUser($data) {
         $query = "UPDATE " . $this->table_name . " SET ";
         $params = [];
         
@@ -117,7 +121,7 @@ class User {
         return $stmt->execute();
     }
 
-    public function delete() {
+    public function deleteUser() {
         $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id", $this->id);

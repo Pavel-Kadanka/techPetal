@@ -44,7 +44,7 @@ const numberOfPosts = post.value?.length - 1
         </v-col>
         <v-col cols="6">
             <v-card class="mx-auto bg-primary" height="40vh" rounded="xl" :href="'/category/'+post[numberOfPosts-1].theme.toLowerCase()+'/'+post[numberOfPosts-1].id">
-                <v-img class="align-end text-white" height="25vh" :src="'/'+post[numberOfPosts-1].image"
+                <v-img class="align-end text-white" height="25vh" :src="post[numberOfPosts-1].image"
                     cover>
                 </v-img>
                 <v-card-title class="font-weight-bold">{{ post[numberOfPosts-1].title }}</v-card-title>
@@ -58,7 +58,7 @@ const numberOfPosts = post.value?.length - 1
                 </v-card-subtitle>
             </v-card>
             <v-card class="mt-5 bg-primary" height="40vh" rounded="xl" :href="'/category/'+post[numberOfPosts-2].theme.toLowerCase()+'/'+post[numberOfPosts-2].id">
-                <v-img class="align-end text-white" height="25vh" :src="'/'+post[numberOfPosts-2].image"
+                <v-img class="align-end text-white" height="25vh" :src="post[numberOfPosts-2].image"
                     cover>
                 </v-img>
                 <v-card-title class="font-weight-bold">{{ post[numberOfPosts-2].title }}</v-card-title>

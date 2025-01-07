@@ -172,9 +172,10 @@ export const useApi = () => {
       return await $fetch(`/api/users.php?id=${userId}`, {
         baseURL: config.public.apiBase,
         method: 'PUT',
-        body: userData,
+        body: JSON.stringify(userData),
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       })
     } catch (error) {
@@ -185,34 +186,18 @@ export const useApi = () => {
 
   const deleteUser = async (userId: number) => {
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('token');
       return await $fetch(`/api/users.php?id=${userId}`, {
         baseURL: config.public.apiBase,
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
-      })
+      });
     } catch (error) {
-      console.error('Error deleting user:', error)
-      throw error
-    }
-  }
-
-  const updateProfile = async (userData: UpdateUserData) => {
-    try {
-      const token = localStorage.getItem('token')
-      return await $fetch('/api/users/profile.php', {
-        baseURL: config.public.apiBase,
-        method: 'PUT',
-        body: userData,
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-    } catch (error) {
-      console.error('Error updating profile:', error)
-      throw error
+      console.error('Error deleting user:', error);
+      throw error;
     }
   }
 
@@ -228,6 +213,5 @@ export const useApi = () => {
     createUser,
     updateUser,
     deleteUser,
-    updateProfile
   }
 } 
