@@ -4,7 +4,13 @@
   "scripts": {
     "frontend": "cd frontend && npm run dev",
     "backend": "php -S localhost:8000 -t backend",
-    "dev": "concurrently \"npm run frontend\" \"npm run backend\""
+    "dev": "concurrently \"npm run frontend\" \"npm run backend\"",
+    "build": "cd frontend && npm install && npm run build",
+    "serve-prod": "php -S 10.0.24.29:8000 -t backend",
+    "build-prod": "cd frontend && npm install --production && npm run build",
+    "start": "npm run build-prod && npm run serve-prod",
+    "install-all": "npm install && cd frontend && npm install && cd ../backend && composer install",
+    "install-backend": "cd backend && composer install"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
