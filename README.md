@@ -55,7 +55,7 @@ API_KEY=your_api_key
 - Manage tasks, events, and schedules with the integrated calendar system.
 
 ## 🛠 Tech Stack
-- **Frontend:** Nuxt 3, Vuetify, Tailwind CSS
+- **Frontend:** Nuxt 3, Vuetify, SCSS
 - **Backend:** PHP
 - **Database:** MySQL
 - **Authentication:** JWT
