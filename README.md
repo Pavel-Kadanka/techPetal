@@ -60,6 +60,10 @@ API_KEY=your_api_key
 - **Database:** MySQL
 - **Authentication:** JWT
 
+## 📈 Er diagram
+![image](https://github.com/user-attachments/assets/cea8a648-02e5-44ee-b422-c4ca88dd3d85)
+
+
 ## 🤝 Contributing
 Contributions are welcome! Feel free to fork this repository, make improvements, and submit a pull request.
 
