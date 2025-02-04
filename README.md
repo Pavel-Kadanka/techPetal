@@ -26,7 +26,7 @@ To set up TechPetal locally, follow these steps:
    ```
 
 3. **Setup Environment Variables:**
-   - Create a `.env` file in the root directory and add necessary configurations (e.g., database credentials, authentication secrets).
+   - Create a `.env` file in the backend directory and add necessary configurations (e.g., database credentials, authentication secrets).
 
 4. **Run the Development Server:**
    ```sh
