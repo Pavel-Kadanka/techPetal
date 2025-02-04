@@ -6,7 +6,7 @@ TechPetal is a web-based application designed to provide seamless and interactiv
 - **Nuxt 3 & Vuetify**: A powerful combination for a responsive and dynamic UI.
 - **PHP Backend**: Robust backend logic for handling application requests.
 - **MySQL Database**: Efficient data storage and retrieval.
-- **Tailwind CSS**: Ensuring a modern and flexible design system.
+- **SCSS**: Ensuring a modern and flexible design system.
 - **User Authentication**: Secure login and account management.
 - **Calendar Integration**: Scheduling and event management functionalities.
 
